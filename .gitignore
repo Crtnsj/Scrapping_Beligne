@@ -13,3 +13,6 @@
 .env
 *.env
 /data
+/downloaded_images/
+/downloaded_images/*
+*jpg
