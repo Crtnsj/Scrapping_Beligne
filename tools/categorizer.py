@@ -1,18 +1,35 @@
 import tools.ollamaAPI as ollama
-import re
+import polars as pl
+import tools.dataFormatter as dataFormatter
 
 
-def categorize(df, categories):
-    return ""
+def categorize(df):
+    for row in df.iter_rows(named=True):
+        title = row["title"]
+        desc = row["desc"]
 
+        categories = ""
 
-def removeThinkingPart(text):
-    try:
-        clean_text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL)
-        return clean_text
-    except Exception as e:
-        print(f"Error cleaning response: {e}")
-        return text
+        ps_category = dataFormatter.getRootCategories(
+            "data/ps_category.csv", "data/ps_category_lang.csv"
+        )
+
+        categories = ", ".join(
+            [
+                f"{row['name']} (id:{row['id_category']})"
+                for row in ps_category.iter_rows(named=True)
+            ]
+        )
+
+        response = categorizeArticle(title, desc, categories)
+
+        if response:
+            print(response)
+            response = ollama.parseResult(response)
+            dftest = pl.DataFrame(response)
+            print(dftest)
+        else:
+            print("Failed to get response from model")
 
 
 def categorizeArticle(title, desc, categories):
@@ -21,20 +38,7 @@ def categorizeArticle(title, desc, categories):
     response = ollama.chatToModel("Classifier", prompt)
 
     if response:
-        cleaned_response = removeThinkingPart(response["response"])
-        print(cleaned_response)
+        cleaned_response = ollama.removeThinkingPart(response["response"])
+        return cleaned_response
     else:
         return None
-
-
-# response = ollama.chatToModel(
-#     "Classifier",
-#     "Couteau à bout rond en plastique, jouet. Les categories disponibles sont: Couteau de table(id:32), Couteau pliant(id:1), couteau de randonnée(id:2), couteau pour enfant(id:4)",
-# )
-
-
-# if response:
-#     cleaned_response = removeThinkingPart(response["response"])
-#     print(cleaned_response)
-# else:
-#     print("Failed to get response from model")

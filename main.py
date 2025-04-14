@@ -5,13 +5,14 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Scrapping Beligne")
 parser.add_argument("--mode", type=str, help="Le mode de fonctionnement")
+parser.add_argument("--sinput", type=str, help="Le fichier d'entrée pour le scrapping")
 args = parser.parse_args()
 
 
 def main():
     if args.mode == "scrap":
         try:
-            priceList = pl.read_csv("./data/test.csv", separator=";")
+            priceList = pl.read_csv(args.sinput, separator=";")
             refList = priceList["ref"].to_list()
             df = sc.get_data(refList)
         except Exception as e:
@@ -22,7 +23,9 @@ def main():
                 df.write_csv("./data/data.csv")
                 print(f"Data saved to ./data/data.csv with {len(df)} entries")
     if args.mode == "categorize":
-        print("Categorizing data")
+        cat.categorize(
+            pl.read_csv("./data/data.csv"),
+        )
 
 
 if __name__ == "__main__":
