@@ -61,3 +61,34 @@ def getRootCategories(ps_category_path, ps_category_lang_path, id_parent=2):
     )
 
     return ps_category
+
+
+def getChildCategories(id_parent):
+    """
+    Get the child categories from the SQL database.
+    Args:
+        id_parent (int): The parent ID to filter categories.
+    Returns:
+        pl.DataFrame: Filtered categories DataFrame.
+    """
+    ps_category = getRootCategories(
+        "data/ps_category.csv", "data/ps_category_lang.csv", id_parent
+    )
+
+    ps_category = ps_category.filter(pl.col("id_shop") == 2)
+
+    return ps_category
+
+
+def concatScrappingPriceList(scrappingFile, pricelistFile):
+    scrapping = pl.read_csv(scrappingFile)
+    priceList = pl.read_csv(pricelistFile, separator=";")
+
+    scrapping = scrapping.with_columns(pl.col("ref").str.strip_chars().alias("ref"))
+
+    concatenation = scrapping.join(priceList, left_on="ref", right_on="ref", how="left")
+
+    concatenation.write_csv("../data/concat.csv", separator=",")
+
+
+concatScrappingPriceList("../data/data.csv", "../data/priceList.csv")

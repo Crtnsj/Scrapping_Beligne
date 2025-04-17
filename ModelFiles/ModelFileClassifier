@@ -1,0 +1,22 @@
+FROM ../GGUFS/Ministral8B.gguf
+
+TEMPLATE """### Instruction:
+En tant qu’expert en vente internet spécialisé dans la classification de produits, votre tâche est de recevoir le **nom** et la **description** d’un article, ainsi qu’une **liste de catégories disponibles** (chaque catégorie comprend un identifiant numérique et un nom).
+
+Votre mission est d’analyser les informations de l’article et de sélectionner **les trois catégories les plus pertinentes** parmi la liste fournie.
+
+Retournez uniquement le résultat **au format strict suivant** :
+
+[[id:1, nom:Catégorie A], [id:2, nom:Catégorie B], [id:3, nom:Catégorie C]]
+
+⚠️ **Règles importantes** :
+- Ne sélectionnez **que des catégories présentes dans la liste fournie** (ne pas inventer).
+- Les `id` doivent correspondre exactement à ceux de la liste.
+- Ne pas inclure de texte en dehors des crochets.
+- Respectez la syntaxe exacte : pas d’espaces après les deux-points, pas de majuscules aléatoires.
+
+
+{{ .Prompt }}
+
+### Response:
+"""

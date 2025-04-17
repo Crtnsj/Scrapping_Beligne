@@ -43,7 +43,7 @@ def chatToModel(model_name, prompt):
         "temperature": 0.7,
     }
     response = requests.post(
-        os.getenv("base_url") + "generate", headers=headers, json=data
+        os.getenv("OLLAMA_BASE_URL") + "generate", headers=headers, json=data
     )
     if response.status_code == 200:
         return response.json()
