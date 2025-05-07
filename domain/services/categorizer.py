@@ -1,6 +1,6 @@
-import tools.ollamaAPI as ollama
+import infrastructure.ollamaAPI as ollama
 import polars as pl
-import tools.dataFormatter as dataFormatter
+import domain.services.dataFormatter as dataFormatter
 
 
 def categorize(df):

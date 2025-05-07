@@ -1,8 +1,11 @@
 import polars as pl
-import tools.scrapper as sc
-import tools.categorizer as cat
-import tools.ollamaAPI as ollama
+
+import domain.services.scrapper as sc
+import domain.services.categorizer as cat
+import infrastructure.ollamaAPI as ollama
 import argparse
+import domain.services.creator as testcreator
+from infrastructure.prestashopAPI import PrestaShopAPI
 
 parser = argparse.ArgumentParser(description="Scrapping Beligne")
 parser.add_argument("--mode", type=str, help="Le mode de fonctionnement")
@@ -34,6 +37,12 @@ def main():
             raise ValueError("Le fichier du model agent est requis")
         else:
             ollama.createModelFromJson(args.tAgentModelFile)
+    elif args.mode == "test":
+        api = PrestaShopAPI(
+            "http://localhost:8080/api/", "8PUU9Z9QCUH3R73MSSRYPT4IDL65XLMB"
+        )
+        df = pl.read_csv("data/data_test.csv")
+        testcreator.createArticles(df, api)
 
 
 if __name__ == "__main__":
